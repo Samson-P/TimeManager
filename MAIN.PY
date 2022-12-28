@@ -1,8 +1,9 @@
+import sys
 import PySimpleGUI as sg
 import datetime
 import random
-import sys
 import subprocess
+
 
 Jobs = []
 curd_main = {
