@@ -76,6 +76,8 @@ def frame():
     stop_button = window['Стоп']
     start_button = window['Пуск']
     save_button = window['Сохранить']
+    # И экземпляр модели БД
+    tm: TMInterval
     while True:
         event, values = window.read()
         match event:
