@@ -1,9 +1,13 @@
 import PySimpleGUI as SimpleGUI
 
+# Общая тема окон DarkGreen4
+SimpleGUI.theme('DarkGreen3')
+
 layout_notes = [
-        [sg.Text('моя почта europioid108000000000@gmail.com')],
-        [sg.Text('89165584923')],
-        [sg.Cancel()]
+    [SimpleGUI.Text('Похиленко Самсон')],
+    [SimpleGUI.Text('По вопросам, связанным с технической поддержкой,')],
+    [SimpleGUI.Text('можете обращаться на почту  europ108b@gmail.com')],
+    [SimpleGUI.Cancel()]
 ]
 
 question = SimpleGUI.Window('Обо мне', layout_notes)
