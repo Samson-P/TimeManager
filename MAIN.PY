@@ -42,6 +42,10 @@ def master_frame():
         [sg.Button('сохранить'), sg.Cancel(), sg.Button('справка'), sg.Button('таблица')]
     ]
     window = master_frame()
+    # Забираем экземпляры кнопок пуск и стоп
+    stop_button = window['Стоп']
+    start_button = window['Пуск']
+    save_button = window['Сохранить']
     while True:
         event, values = window.read()
         if event == 'таблица':
@@ -64,6 +68,13 @@ def master_frame():
             if k == 'да':
                 open('tmp.txt', 'w').write('')
                 Jobs.clear()
+                tm = TMInterval(title=values[4])
+                start_button.update(disabled=True)
+                stop_button.update(disabled=False)
+                save_button.update(disabled=False)
+                tm.stop()
+                jobs.append(tm)
+                tm.delete()
                 window.close()
                 return 0
                 break
