@@ -49,7 +49,6 @@ def fm_tmp(a):
         print('This will be written to /some/dir/test.txt', file=file)
 
 
-def frame():
 def master_frame():
     # Шаблон главного окна приложения
     TMInterface = [
@@ -71,6 +70,7 @@ def master_frame():
         ]
     ]
     return SimpleGUI.Window('Time Manager', layout=TMInterface)
+def frame():
     window = master_frame()
     # Забираем экземпляры кнопок пуск и стоп
     stop_button = window['Стоп']
@@ -78,65 +78,95 @@ def master_frame():
     save_button = window['Сохранить']
     while True:
         event, values = window.read()
-        if event == 'таблица':
-            show_table()
-        if event == 'пуск/стоп':
-            start_stop(values)
-        if event == 'сохранить':
-            save_frame()
-        if event == 'справка':
-            subprocess.Popen([sys.executable, 'notes.py'])
-        if event == 'Cancel':
-            layout2 = [
-                [sg.Text('Хотите выйти из программы?')],
-                [sg.Text('Не сохраненные данные будут потеряны.')],
-                [sg.Button('да'), sg.Cancel()]
-            ]
-            question = sg.Window('', layout2)
-            k, b = question.read()
-            question.close()
-            if k == 'да':
-                open('tmp.txt', 'w').write('')
-                Jobs.clear()
+        match event:
+            case 'Таблица':
+                # show_table()
+                pass
+            case 'Пуск':
+                if values[4] == '':
+                    print('Введите данные в поле "Род деятельности"!')
                 tm = TMInterval(title=values[4])
                 # Обновляем состояние кнопок
                 start_button.update(disabled=True)
                 stop_button.update(disabled=False)
                 save_button.update(disabled=False)
+            case 'Стоп':
+                tm.description = values[5]
+                # Вычислим интервал времени
                 tm.stop()
                 jobs.append(tm)
                 tm.delete()
                 # Обновляем состояние кнопок
                 start_button.update(disabled=False)
                 stop_button.update(disabled=True)
+            case 'Сохранить' | 'Сохранить круги':
+                print(jobs)
+                # Создаем шаблон формы с Checkbox-сами кругов, которые хотим сохранить
+                SAVE_FORM = [
+                    [SimpleGUI.Checkbox(f'{job.title}', default=True)] for job in jobs
+                ]
+                # Добавляем кнопки "Сохранить" и "Выйти"
+                SAVE_FORM.append(
+                    [SimpleGUI.Button('Сохранить'), SimpleGUI.Cancel()]
+                )
+                # Инициализируем окно как экземпляр класса SimpleGUI.Window, подгоняем по размеру к содержимому
+                save_frames = SimpleGUI.Window('Выберите круги для сохранения',
+                                               layout=SAVE_FORM, size=(300, 30*len(jobs) + 40)
+                                               )
+                # Отображаем окно, отслеживаем нажатия
+                save_frame_event, save_frame_values = save_frames.read()
+                # Закрываем окно сохранения
+                save_frames.close()
+                match save_frame_event:
+                    case 'Сохранить':
+                        tmp_jobs = jobs
+                        jobs = []
+                        for job in tmp_jobs:
+                            # Сохраняем только выбранные в save_frame_values
+                            if save_frame_values[tmp_jobs.index(job)]:
+                                job.save()
+                        for job in tmp_jobs:
+                            if not save_frame_values[tmp_jobs.index(job)]:
+                                # В памяти остаются только не сохраненные круги
+                                jobs.append(job)
+                        del tmp_jobs
+                    case _:
+                        pass
+            case 'Справка':
+                # Открываем справку в отдельном потоке
+                subprocess.Popen([sys.executable, 'notes.py'])
+            case 'Cancel' | 'Выйти':
                 cancel_event = cancel_frame()
+                match cancel_event:
+                    case 'Да':
+                        # Выход без сохранения сессии
+                        # open('tmp.txt', 'w').write('')
+                        window.close()
+                        return 0
+                    case 'Сохранить сессию и выйти':
+                        # Выход с сохранением сессии в tmp файле
+                        # open('tmp.txt', 'w').write('')
+                        fm_tmp(jobs)
+                        jobs.clear()
+                        window.close()
+                        return 0
+            case 'Перезапуск' | 'Перезапустить':
                 refresh_event = refresh_frame()
+                if refresh_event == 'да':
+                    # Закрываем окно
+                    window.close()
+                    # Удаляем круги прошлой сессии
+                    jobs.clear()
+                    # Единичку возвращаем, чтобы окно перезапустилось
+                    return 1
+            case SimpleGUI.WIN_CLOSED:
+                # Сохраняем сессию
+                # ...
+                # и закрываем окно
                 window.close()
+                fm_tmp(jobs)
+                jobs.clear()
                 return 0
-                break
-            del layout2, k, b, question
-        if event in (None, None):
-            return 0
-            break
-        if event == 'перезапуск':
-            layout2 = [
-                [sg.Text('Хотите перезапустить таймер?')],
-                [sg.Text('Не сохраненные данные будут потеряны.')],
-                [sg.Button('да'), sg.Cancel()]
-            ]
-            question = sg.Window('', layout2)
-            k, b = question.read()
-            question.close()
-            if k == 'да':
-                open('tmp.txt', 'w').write('')
-                global curd
-                curd = curd_main
-                Jobs.clear()
-                window.close()
-                return 1
-                break
-
-            del layout2, k, b, question
 
 
 def past(n):
@@ -146,6 +176,8 @@ def past(n):
         if n[i] == True:
             file_manager('|' + o.split('~')[1])
     file_good_times.close()
+            case _:
+                pass
 
 
 def show_table():
