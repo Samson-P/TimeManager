@@ -45,11 +45,6 @@ def fm_tmp(a):
 
 
 def frame():
-    layout = [
-        [sg.Text('таймер'), sg.Button('пуск/стоп'), sg.Button('перезапуск')],
-        [sg.Output(size=(88, 15))],
-        [sg.Text('режим:'), sg.Radio('без перерывов', '', True), sg.Radio('с перерывами', '')],
-        [sg.Text('род деятельности'), sg.InputText()],
 def master_frame():
     # Шаблон главного окна приложения
     TMInterface = [
@@ -62,10 +57,15 @@ def master_frame():
         [SimpleGUI.Text('Режим:'), SimpleGUI.Radio('без перерывов', '', True), SimpleGUI.Radio('с перерывами', '')],
         [SimpleGUI.Text('Род деятельности'), SimpleGUI.InputText()],
         # sg.FileBrowse()
-        [sg.Text('заметки')],
-        [sg.InputText(size=(88, 1))],
-        [sg.Button('сохранить'), sg.Cancel(), sg.Button('справка'), sg.Button('таблица')]
+        [SimpleGUI.Text('Заметки')],
+        [SimpleGUI.InputText(size=(88, 1))],
+        [
+            SimpleGUI.Button('Сохранить', bind_return_key=True, disabled=True),
+            SimpleGUI.Cancel(), SimpleGUI.Button('Справка'),
+            SimpleGUI.Button('Таблица', bind_return_key=True, disabled=True)
+        ]
     ]
+    return SimpleGUI.Window('Time Manager', layout=TMInterface)
     window = master_frame()
     # Забираем экземпляры кнопок пуск и стоп
     stop_button = window['Стоп']
