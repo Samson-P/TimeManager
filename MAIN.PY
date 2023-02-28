@@ -3,6 +3,7 @@ import PySimpleGUI as sg
 import datetime
 import random
 import subprocess
+from sqlite_adapter import TMInterval
 
 # Общая тема окон DarkGreen4
 SimpleGUI.theme('DarkGreen3')
