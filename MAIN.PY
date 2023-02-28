@@ -70,7 +70,11 @@ def master_frame():
         ]
     ]
     return SimpleGUI.Window('Time Manager', layout=TMInterface)
+
+
+# Точка входа в оконное приложение
 def frame():
+    jobs: list = []
     window = master_frame()
     # Забираем экземпляры кнопок пуск и стоп
     stop_button = window['Стоп']
