@@ -1,0 +1,2 @@
+PySimpleGUI
+peewee==3.16.0
