@@ -169,27 +169,17 @@ def frame():
                 fm_tmp(jobs)
                 jobs.clear()
                 return 0
-
-
-def past(n):
-    file_good_times = open('tmp.txt', 'r')
-    for i in range(0, len(n)):
-        o = file_good_times.readline()
-        if n[i] == True:
-            file_manager('|' + o.split('~')[1])
-    file_good_times.close()
             case _:
                 pass
 
 
 def show_table():
     layout4 = [
-        [sg.Text('Данные собранные за все время (начиная с ...):'), sg.Button('Показать')],
-        [sg.Output(size=(130, 40))],
-        [sg.Cancel(), sg.Button('справка')]
+        [SimpleGUI.Text('Данные собранные за все время (начиная с ...):'), SimpleGUI.Button('Показать')],
+        [SimpleGUI.Output(size=(130, 40))],
+        [SimpleGUI.Cancel(), SimpleGUI.Button('справка')]
     ]
-    table = sg.Window('Table', layout4)
-    k = 0
+    table = SimpleGUI.Window('Table', layout4)
     while True:
         t_event, t_values = table.read()
         if t_event == 'Показать':
