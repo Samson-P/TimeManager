@@ -14,11 +14,9 @@ SimpleGUI.theme('DarkGreen3')
 
 
 def fm_tmp(a):
-    a = str(curd['Circle']/100).split('.')[1] + a
-    file_m = open('tmp.txt', 'a')
-    file_m.write(a)
-    file_m.close()
-    del file_m
+    # Кеширование не сохраненных данных
+    with open('tmp.txt', 'w') as file:
+        print('This will be written to /some/dir/test.txt', file=file)
 
 
 def frame():
