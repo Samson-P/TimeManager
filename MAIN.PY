@@ -4,6 +4,8 @@ import datetime
 import random
 import subprocess
 
+# Общая тема окон DarkGreen4
+SimpleGUI.theme('DarkGreen3')
 
 Jobs = []
 curd_main = {
