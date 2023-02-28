@@ -9,8 +9,33 @@ from sqlite_adapter import TMInterval
 SimpleGUI.theme('DarkGreen3')
 
 # Меню приложения
+# Открытие окна предупреждения о возможной потере данных о не сохраненных кругах
+def cancel_frame():
+    # Шаблон окна для выхода из программы
+    CAUTION = [
+        [SimpleGUI.Text('Хотите выйти из программы?')],
+        [SimpleGUI.Text('Не сохраненные данные будут потеряны.')],
+        [SimpleGUI.Button('Да'), SimpleGUI.Button('Сохранить сессию и выйти'), SimpleGUI.Cancel()]
+    ]
+    quit_frame = SimpleGUI.Window('Внимание', layout=CAUTION)
+    event, _ = quit_frame.read()
+    quit_frame.close()
+    del quit_frame
+    return event
 
 
+def refresh_frame():
+    # Шаблон окна для перезапуска приложения с потерей данных о кругах
+    REFRESH = [
+        [SimpleGUI.Text('Хотите перезапустить таймер?')],
+        [SimpleGUI.Text('Не сохраненные данные будут потеряны.')],
+        [SimpleGUI.Button('да'), SimpleGUI.Cancel()]
+    ]
+    window = SimpleGUI.Window('Внимание', layout=REFRESH)
+    event, _ = window.read()
+    window.Close()
+    del window
+    return event
 
 
 def fm_tmp(a):
@@ -75,6 +100,8 @@ def master_frame():
                 tm.stop()
                 jobs.append(tm)
                 tm.delete()
+                cancel_event = cancel_frame()
+                refresh_event = refresh_frame()
                 window.close()
                 return 0
                 break
