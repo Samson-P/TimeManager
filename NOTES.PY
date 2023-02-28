@@ -1,7 +1,4 @@
-import PySimpleGUI as sg
-import datetime
-import random
-import sys, subprocess
+import PySimpleGUI as SimpleGUI
 
 layout_notes = [
         [sg.Text('моя почта europioid108000000000@gmail.com')],
@@ -9,7 +6,7 @@ layout_notes = [
         [sg.Cancel()]
 ]
 
-question = sg.Window('', layout_notes)
+question = SimpleGUI.Window('Обо мне', layout_notes)
 while True:
     k, b = question.read()
     if k == 'Cancel':
