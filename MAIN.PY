@@ -41,7 +41,7 @@ def master_frame():
         [sg.InputText(size=(88, 1))],
         [sg.Button('сохранить'), sg.Cancel(), sg.Button('справка'), sg.Button('таблица')]
     ]
-    window = sg.Window('полезное время', layout)
+    window = master_frame()
     while True:
         event, values = window.read()
         if event == 'таблица':
