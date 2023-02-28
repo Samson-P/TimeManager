@@ -109,9 +109,9 @@ def show_table():
             break
 
 
-while True:
-    open('tmp.txt', 'w').write('')
-    curd = curd_main
-    out = frame()
-    if out == 0:
-        break
+# Точка входа в приложение
+if __name__ == "__main__":
+    while True:
+        out = frame()
+        if out == 0:
+            break
