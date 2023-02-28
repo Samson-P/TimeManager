@@ -25,6 +25,17 @@ def frame():
         [sg.Output(size=(88, 15))],
         [sg.Text('режим:'), sg.Radio('без перерывов', '', True), sg.Radio('с перерывами', '')],
         [sg.Text('род деятельности'), sg.InputText()],
+def master_frame():
+    # Шаблон главного окна приложения
+    TMInterface = [
+        [SimpleGUI.Menu(menu_def)],
+        [
+            SimpleGUI.Text('Таймер'), SimpleGUI.Button('Пуск', bind_return_key=True, disabled=False),
+            SimpleGUI.Button('Стоп', bind_return_key=True, disabled=True), SimpleGUI.Button('Перезапуск')
+        ],
+        [SimpleGUI.Output(size=(88, 15))],
+        [SimpleGUI.Text('Режим:'), SimpleGUI.Radio('без перерывов', '', True), SimpleGUI.Radio('с перерывами', '')],
+        [SimpleGUI.Text('Род деятельности'), SimpleGUI.InputText()],
         # sg.FileBrowse()
         [sg.Text('заметки')],
         [sg.InputText(size=(88, 1))],
