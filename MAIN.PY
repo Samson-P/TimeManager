@@ -99,12 +99,16 @@ def master_frame():
                 open('tmp.txt', 'w').write('')
                 Jobs.clear()
                 tm = TMInterval(title=values[4])
+                # Обновляем состояние кнопок
                 start_button.update(disabled=True)
                 stop_button.update(disabled=False)
                 save_button.update(disabled=False)
                 tm.stop()
                 jobs.append(tm)
                 tm.delete()
+                # Обновляем состояние кнопок
+                start_button.update(disabled=False)
+                stop_button.update(disabled=True)
                 cancel_event = cancel_frame()
                 refresh_event = refresh_frame()
                 window.close()
