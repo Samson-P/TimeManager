@@ -61,6 +61,24 @@ def refresh_frame():
     return event
 
 
+def save_frame(query_set):
+    # Создаем шаблон формы с Checkbox-сами кругов, которые хотим сохранить
+    SAVE_FORM = [
+        [SimpleGUI.Checkbox(f'{job.title}', default=True)] for job in query_set
+    ]
+    # Добавляем кнопки "Сохранить" и "Выйти"
+    SAVE_FORM.append(
+        [SimpleGUI.Button('Сохранить'), SimpleGUI.Cancel()]
+    )
+    # Инициализируем окно как экземпляр класса SimpleGUI.Window, подгоняем по размеру к содержимому
+    window = SimpleGUI.Window('Выберите круги для сохранения',
+                              layout=SAVE_FORM, size=(300, 30 * len(query_set) + 40)
+                              )
+    event, values = window.read()
+    window.close()
+    return event, values
+
+
 # Кеширование не сохраненных данных
 def fm_tmp(query_set):
     jobs_to_json = []
@@ -118,7 +136,6 @@ def frame():
                 # Обновляем состояние кнопок
                 start_button.update(disabled=True)
                 stop_button.update(disabled=False)
-                save_button.update(disabled=False)
             case 'Стоп':
                 tm.description = values[4]
                 # Вычислим интервал времени
@@ -128,36 +145,26 @@ def frame():
                 # Обновляем состояние кнопок
                 start_button.update(disabled=False)
                 stop_button.update(disabled=True)
+                # Так как jobs теперь не пустой, делаем кнопку "Сохранить" кликабельной
+                save_button.update(disabled=False)
             case 'Сохранить' | 'Сохранить круги':
-                # Создаем шаблон формы с Checkbox-сами кругов, которые хотим сохранить
-                SAVE_FORM = [
-                    [SimpleGUI.Checkbox(f'{job.title}', default=True)] for job in jobs
-                ]
-                # Добавляем кнопки "Сохранить" и "Выйти"
-                SAVE_FORM.append(
-                    [SimpleGUI.Button('Сохранить'), SimpleGUI.Cancel()]
-                )
-                # Инициализируем окно как экземпляр класса SimpleGUI.Window, подгоняем по размеру к содержимому
-                save_frames = SimpleGUI.Window('Выберите круги для сохранения',
-                                               layout=SAVE_FORM, size=(300, 30*len(jobs) + 40)
-                                               )
-                # Отображаем окно, отслеживаем нажатия
-                save_frame_event, save_frame_values = save_frames.read()
-                # Закрываем окно сохранения
-                save_frames.close()
-                match save_frame_event:
+                # Отображаем окно, отслеживаем нажатие
+                save_event, save_values = save_frame(jobs)
+                match save_event:
                     case 'Сохранить':
                         tmp_jobs = jobs
                         jobs = []
                         for job in tmp_jobs:
-                            # Сохраняем только выбранные в save_frame_values
-                            if save_frame_values[tmp_jobs.index(job)]:
+                            # Сохраняем только выбранные в save_values
+                            if save_values[tmp_jobs.index(job)]:
                                 job.save()
                         for job in tmp_jobs:
-                            if not save_frame_values[tmp_jobs.index(job)]:
+                            if not save_values[tmp_jobs.index(job)]:
                                 # В памяти остаются только не сохраненные круги
                                 jobs.append(job)
                         del tmp_jobs
+                        # Если список кругов не пуст, делаем кнопку "Сохранить" кликабельной
+                        save_button.update(disabled=not bool(jobs))
                     case _:
                         pass
             case 'Справка':
