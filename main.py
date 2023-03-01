@@ -188,7 +188,8 @@ def frame():
                     return 1
             case SimpleGUI.WIN_CLOSED:
                 # Сохраняем сессию и закрываем окно
-                fm_tmp(jobs)
+                if jobs:
+                    fm_tmp(jobs)
                 jobs.clear()
                 window.close()
                 return 0
