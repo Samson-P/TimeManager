@@ -8,8 +8,10 @@ import subprocess
 from sqlite_adapter import TMInterval
 
 # Иконка приложения
-ICON_PATH = 'ico/main.ico'
-
+ICONS_PATH = {
+    'main': 'ico/main.ico',
+    'error': 'ico/error.ico',
+}
 # Общая тема окон DarkGreen4
 SimpleGUI.theme('DarkGreen3')
 
@@ -110,7 +112,20 @@ def master_frame():
             SimpleGUI.Button('Таблица', bind_return_key=True, disabled=True)
         ]
     ]
-    return SimpleGUI.Window('Time Manager', layout=TMInterface, icon=ICON_PATH)
+    return SimpleGUI.Window('Time Manager', layout=TMInterface, icon=ICONS_PATH['main'])
+
+
+def error_frame(message, err_name='Error'):
+    # Шаблон окна ошибки
+    ERROR = [
+        [SimpleGUI.Text(message)],
+        [SimpleGUI.Cancel()]
+    ]
+    # Инициализируем окно как экземпляр класса SimpleGUI.Window
+    window = SimpleGUI.Window(err_name, layout=ERROR, icon=ICONS_PATH['error'])
+    # Показываем окно без отслеживания нажатий
+    window.read()
+    window.close()
 
 
 # Точка входа в оконное приложение
@@ -130,12 +145,20 @@ def frame():
                 # show_table()
                 pass
             case 'Пуск':
+                # Только если поле "Род деятельности" не пусто...
                 if values['title'] == '':
-                    print('Введите данные в поле "Род деятельности"!')
-                tm = TMInterval(title=values['title'])
-                # Обновляем состояние кнопок
-                start_button.update(disabled=True)
-                stop_button.update(disabled=False)
+                    # Скрываем главное окно
+                    window.hide()
+                    # Вызов ошибки
+                    error_frame('Введите данные в поле "Род деятельности"!', err_name='Поле пусто!')
+                    # Делаем главное окно обратно видимым
+                    window.un_hide()
+                else:
+                    # ... происходит логика "Пуск"
+                    tm = TMInterval(title=values['title'])
+                    # Обновляем состояние кнопок
+                    start_button.update(disabled=True)
+                    stop_button.update(disabled=False)
             case 'Стоп':
                 tm.description = values['description']
                 # Вычислим интервал времени
