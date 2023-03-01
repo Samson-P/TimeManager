@@ -116,6 +116,13 @@ def master_frame():
 
 
 def error_frame(message, err_name='Error'):
+    """
+    Процедура отрисовки окна с ошибкой
+
+    :param message: Обязательное поле содержания ошибки
+    :param err_name: Необязательное поле короткого названия ошибки (default='Error')
+    :return: None
+    """
     # Шаблон окна ошибки
     ERROR = [
         [SimpleGUI.Text(message)],
