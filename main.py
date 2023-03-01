@@ -103,7 +103,7 @@ def master_frame():
         [SimpleGUI.Text('Род деятельности'), SimpleGUI.InputText()],
         # sg.FileBrowse()
         [SimpleGUI.Text('Заметки')],
-        [SimpleGUI.InputText(size=(88, 1))],
+        [SimpleGUI.Multiline(key='description', size=(63, 7))],
         [
             SimpleGUI.Button('Сохранить', bind_return_key=True, disabled=True),
             SimpleGUI.Cancel(), SimpleGUI.Button('Справка'),
