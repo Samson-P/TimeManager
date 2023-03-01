@@ -7,6 +7,9 @@ import PySimpleGUI as SimpleGUI
 import subprocess
 from sqlite_adapter import TMInterval
 
+# Иконка приложения
+ICON_PATH = 'ico/main.ico'
+
 # Общая тема окон DarkGreen4
 SimpleGUI.theme('DarkGreen3')
 
@@ -89,7 +92,7 @@ def master_frame():
             SimpleGUI.Button('Таблица', bind_return_key=True, disabled=True)
         ]
     ]
-    return SimpleGUI.Window('Time Manager', layout=TMInterface)
+    return SimpleGUI.Window('Time Manager', layout=TMInterface, icon=ICON_PATH)
 
 
 # Точка входа в оконное приложение
