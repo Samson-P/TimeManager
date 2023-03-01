@@ -1,11 +1,9 @@
 # coding=utf-8
 import datetime
 import sys
-import time
 import json
 
 import PySimpleGUI as SimpleGUI
-import random
 import subprocess
 from sqlite_adapter import TMInterval
 
@@ -80,7 +78,6 @@ def master_frame():
             SimpleGUI.Text('Таймер'), SimpleGUI.Button('Пуск', bind_return_key=True, disabled=False),
             SimpleGUI.Button('Стоп', bind_return_key=True, disabled=True), SimpleGUI.Button('Перезапуск')
         ],
-        [SimpleGUI.Output(size=(88, 15))],
         [SimpleGUI.Text('Режим:'), SimpleGUI.Radio('без перерывов', '', True), SimpleGUI.Radio('с перерывами', '')],
         [SimpleGUI.Text('Род деятельности'), SimpleGUI.InputText()],
         # sg.FileBrowse()
@@ -112,7 +109,7 @@ def frame():
                 # show_table()
                 pass
             case 'Пуск':
-                if values[4] == '':
+                if values[3] == '':
                     print('Введите данные в поле "Род деятельности"!')
                 tm = TMInterval(title=values[4])
                 # Обновляем состояние кнопок
@@ -120,7 +117,7 @@ def frame():
                 stop_button.update(disabled=False)
                 save_button.update(disabled=False)
             case 'Стоп':
-                tm.description = values[5]
+                tm.description = values[4]
                 # Вычислим интервал времени
                 tm.stop()
                 jobs.append(tm)
@@ -129,7 +126,6 @@ def frame():
                 start_button.update(disabled=False)
                 stop_button.update(disabled=True)
             case 'Сохранить' | 'Сохранить круги':
-                print(jobs)
                 # Создаем шаблон формы с Checkbox-сами кругов, которые хотим сохранить
                 SAVE_FORM = [
                     [SimpleGUI.Checkbox(f'{job.title}', default=True)] for job in jobs
