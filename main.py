@@ -1,9 +1,10 @@
 # coding=utf-8
+import datetime
 import sys
 import time
+import json
 
 import PySimpleGUI as SimpleGUI
-import datetime
 import random
 import subprocess
 from sqlite_adapter import TMInterval
@@ -18,13 +19,26 @@ menu_def = [['Файл', ['Пуск', 'Стоп', 'Перезапустить', 
 
 
 # Открытие окна предупреждения о возможной потере данных о не сохраненных кругах
-def cancel_frame():
+def cancel_frame(mode):
     # Шаблон окна для выхода из программы
     CAUTION = [
         [SimpleGUI.Text('Хотите выйти из программы?')],
         [SimpleGUI.Text('Не сохраненные данные будут потеряны.')],
-        [SimpleGUI.Button('Да'), SimpleGUI.Button('Сохранить сессию и выйти'), SimpleGUI.Cancel()]
+        [SimpleGUI.Button('Да'), SimpleGUI.Cancel()]
     ]
+
+    # Добавляем логику сохранения текущей сессии перед выходом только в случае
+    # наличия не сохраненных кругов
+    match mode:
+        case 'saving':
+            CAUTION[2].append(
+                SimpleGUI.Button('Сохранить сессию и выйти')
+            )
+        case 'without_saving':
+            pass
+        case _:
+            pass
+
     quit_frame = SimpleGUI.Window('Внимание', layout=CAUTION)
     event, _ = quit_frame.read()
     quit_frame.close()
@@ -46,10 +60,16 @@ def refresh_frame():
     return event
 
 
-def fm_tmp(a):
-    # Кеширование не сохраненных данных
-    with open('tmp.txt', 'w') as file:
-        print('This will be written to /some/dir/test.txt', file=file)
+# Кеширование не сохраненных данных
+def fm_tmp(query_set):
+    jobs_to_json = []
+    for tm_interval in query_set:
+        jobs_to_json.append(tm_interval.serialize())
+
+    to_json_file = {'dt_created': datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"), 'data': jobs_to_json}
+
+    with open('tm_tmp.json', 'w') as file:
+        json.dump(to_json_file, file)
 
 
 def master_frame():
@@ -145,16 +165,18 @@ def frame():
                 # Открываем справку в отдельном потоке
                 subprocess.Popen([sys.executable, 'notes.py'])
             case 'Cancel' | 'Выйти':
-                cancel_event = cancel_frame()
+                if not jobs:
+                    cancel_event = cancel_frame('without_saving')
+                else:
+                    cancel_event = cancel_frame('saving')
                 match cancel_event:
                     case 'Да':
                         # Выход без сохранения сессии
-                        # open('tmp.txt', 'w').write('')
+                        jobs.clear()
                         window.close()
                         return 0
                     case 'Сохранить сессию и выйти':
-                        # Выход с сохранением сессии в tmp файле
-                        # open('tmp.txt', 'w').write('')
+                        # Выход с сохранением сессии во временном файле
                         fm_tmp(jobs)
                         jobs.clear()
                         window.close()
@@ -169,12 +191,10 @@ def frame():
                     # Единичку возвращаем, чтобы окно перезапустилось
                     return 1
             case SimpleGUI.WIN_CLOSED:
-                # Сохраняем сессию
-                # ...
-                # и закрываем окно
-                window.close()
+                # Сохраняем сессию и закрываем окно
                 fm_tmp(jobs)
                 jobs.clear()
+                window.close()
                 return 0
             case _:
                 pass
