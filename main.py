@@ -11,6 +11,11 @@ from sqlite_adapter import TMInterval
 ICONS_PATH = {
     'main': 'ico/main.ico',
     'error': 'ico/error.ico',
+    'save': 'ico/save.ico',
+    'import': 'ico/import.ico',
+    'data_loss': 'ico/data_loss.ico',
+    'leave': 'ico/leave.ico',
+    'refresh': 'ico/refresh.ico',
 }
 # Общая тема окон DarkGreen4
 SimpleGUI.theme('DarkGreen3')
@@ -30,6 +35,9 @@ def cancel_frame(mode):
         [SimpleGUI.Button('Да'), SimpleGUI.Cancel()]
     ]
 
+    # Иконка окна по умолчанию - выход
+    cancel_ico = ICONS_PATH['leave']
+
     # Добавляем логику сохранения текущей сессии перед выходом только в случае
     # наличия не сохраненных кругов
     match mode:
@@ -37,12 +45,14 @@ def cancel_frame(mode):
             CAUTION[2].append(
                 SimpleGUI.Button('Сохранить сессию и выйти')
             )
+            # Иконка окна в случае с потерей данных
+            cancel_ico = ICONS_PATH['data_loss']
         case 'without_saving':
             pass
         case _:
             pass
 
-    quit_frame = SimpleGUI.Window('Внимание', layout=CAUTION)
+    quit_frame = SimpleGUI.Window('Внимание', layout=CAUTION, icon=cancel_ico)
     event, _ = quit_frame.read()
     quit_frame.close()
     del quit_frame
@@ -56,7 +66,7 @@ def refresh_frame():
         [SimpleGUI.Text('Не сохраненные данные будут потеряны.')],
         [SimpleGUI.Button('да'), SimpleGUI.Cancel()]
     ]
-    window = SimpleGUI.Window('Внимание', layout=REFRESH)
+    window = SimpleGUI.Window('Внимание', layout=REFRESH, icon=ICONS_PATH['refresh'])
     event, _ = window.read()
     window.Close()
     del window
@@ -73,8 +83,9 @@ def save_frame(query_set):
         [SimpleGUI.Button('Сохранить'), SimpleGUI.Cancel()]
     )
     # Инициализируем окно как экземпляр класса SimpleGUI.Window, подгоняем по размеру к содержимому
-    window = SimpleGUI.Window('Выберите круги для сохранения',
-                              layout=SAVE_FORM, size=(300, 30 * len(query_set) + 40)
+    window = SimpleGUI.Window('Выберите круги',
+                              layout=SAVE_FORM, size=(300, 30 * len(query_set) + 40),
+                              icon=ICONS_PATH['save']
                               )
     event, values = window.read()
     window.close()
