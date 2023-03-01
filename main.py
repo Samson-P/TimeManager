@@ -245,6 +245,8 @@ def frame():
                 window.close()
                 return 0
             case _:
+                jobs.clear()
+                window.close()
                 pass
 
 
