@@ -120,11 +120,9 @@ class DBManager:
 
 
 if __name__ == "__main__":
-    tm1 = TimeInterval('10', 'совершенно 1')
-    print(tm1.show_now())
-    print(tm1.write())
 
-    err, tm = TimeInterval().read()
-    print(err)
-    print(len(tm))
-    print(tm[0].title)
+    # Перед всей работой с базой, и т.п. надо просто проверить существование базы, таблицы,
+    # проверить схему таблицы. Это можно поручить классу DBManager
+    # TMInterval.create_table()
+    # TMInterval.create(title='Hello', interval='3000', dt_start='10 10 10')
+    pass
