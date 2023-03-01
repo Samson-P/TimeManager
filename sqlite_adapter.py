@@ -52,8 +52,8 @@ class TMInterval(BaseModel):
 
     def stop(self):
         # Здесь реализовано вычитание dt_start из .now()
-        # interval представляет из себя экземпляр класса timedelta
-        self.interval = datetime.datetime.now() - self.dt_start
+        # interval представляет из себя строковое значение экземпляра timedelta
+        self.interval = str(datetime.datetime.now() - self.dt_start)
         # И запись dt_start в формате ДД-ММ-ГГГГ ЧЧ:ММ:СС
         self.dt_start = self.dt_start.strftime("%d-%m-%Y %H:%M:%S")
 
@@ -63,7 +63,14 @@ class TMInterval(BaseModel):
         return self.title
 
     def serialize(self):
-        return self
+        temporary_json_template: dict
+        temporary_json_template = {
+            'title': self.title,
+            'description': self.description,
+            'dt_start': self.dt_start,
+            'interval': self.interval
+        }
+        return temporary_json_template
 
     class Meta:
         table_name = TABLE_NAME
