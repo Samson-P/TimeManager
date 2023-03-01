@@ -100,7 +100,7 @@ def master_frame():
             SimpleGUI.Button('Стоп', bind_return_key=True, disabled=True), SimpleGUI.Button('Перезапуск')
         ],
         [SimpleGUI.Text('Режим:'), SimpleGUI.Radio('без перерывов', '', True), SimpleGUI.Radio('с перерывами', '')],
-        [SimpleGUI.Text('Род деятельности'), SimpleGUI.InputText()],
+        [SimpleGUI.Text('Род деятельности'), SimpleGUI.InputText(key='title')],
         # sg.FileBrowse()
         [SimpleGUI.Text('Заметки')],
         [SimpleGUI.Multiline(key='description', size=(63, 7))],
@@ -130,14 +130,14 @@ def frame():
                 # show_table()
                 pass
             case 'Пуск':
-                if values[3] == '':
+                if values['title'] == '':
                     print('Введите данные в поле "Род деятельности"!')
-                tm = TMInterval(title=values[4])
+                tm = TMInterval(title=values['title'])
                 # Обновляем состояние кнопок
                 start_button.update(disabled=True)
                 stop_button.update(disabled=False)
             case 'Стоп':
-                tm.description = values[4]
+                tm.description = values['description']
                 # Вычислим интервал времени
                 tm.stop()
                 jobs.append(tm)
