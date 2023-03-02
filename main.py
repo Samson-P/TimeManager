@@ -154,6 +154,8 @@ def frame():
     stop_button = window['Стоп']
     start_button = window['Пуск']
     save_button = window['Сохранить']
+    title_input_area = window['title']
+    description_input_area = window['description']
     # И экземпляр модели БД
     tm: TMInterval
     while True:
@@ -188,6 +190,8 @@ def frame():
                 stop_button.update(disabled=True)
                 # Так как jobs теперь не пустой, делаем кнопку "Сохранить" кликабельной
                 save_button.update(disabled=False)
+                title_input_area.update(value='')
+                description_input_area.update(value='')
             case 'Сохранить' | 'Сохранить круги':
                 # Отображаем окно, отслеживаем нажатие
                 save_event, save_values = save_frame(jobs)
