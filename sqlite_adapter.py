@@ -26,6 +26,11 @@ CREATE TABLE dt_control (
 );
 '''
 
+# SQL для проверки, существует ли таблица
+TABLE_EXISTS_QUERY = f'''
+                    SELECT name FROM sqlite_master WHERE type='table' AND name='{TABLE_NAME}';
+                    '''
+
 # SQL для записи новой строки
 TABLE_INSERT_QUERY = '''
                 INSERT INTO {}(title, description, dt_start, interval) 
@@ -99,23 +104,21 @@ class DBManager:
             self.error = err
 
     def __enter__(self, table=TABLE_NAME, database=DB_NAME):
-        # проверить, может таблица с таким именем уже существует
-        table_exists_query = f'''
-            SELECT name FROM sqlite_master WHERE type='table' AND name='{table}';
-            '''
+        # Проверяем, может таблица уже существует
+        self.cursor.execute(TABLE_EXISTS_QUERY)
 
-        self.cursor.execute(table_exists_query)
         result = self.cursor.fetchall()
 
         if len(result) == 0:
             self.cursor.execute(CREATE_TABLE_QUERY)
             self.con.commit()
-            self.cursor.execute(table_exists_query)
             result = self.cursor.fetchall()
             if len(result) != 0:
                 self.error = 'table created, no point in reading'
             else:
                 self.error = f"An error occurred while creating the table!\n{result[0]}"
+        # Проверить, таблица создалась
+        self.cursor.execute(TABLE_EXISTS_QUERY)
         else:
             self.error = None
 
