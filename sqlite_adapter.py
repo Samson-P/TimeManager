@@ -2,6 +2,7 @@ import sqlite3
 from peewee import Model, SqliteDatabase, TextField, AutoField
 import datetime
 import configparser
+import os_filemanager
 
 
 # Открываем файл конфигурации
@@ -94,33 +95,64 @@ class DBManager:
         self.table = TABLE_NAME
         self.fields = TABLE_SCHEMA
 
-        try:
+        manual_database_name = os_filemanager.db_exists()
+
+        # Проверяем существование файла базы данных
+        if manual_database_name is not None:
+            # Проверяем, БД имеет название, как в конфигурационном файле?
+            if manual_database_name != self.name:
+                # Если нет, задаем новое
+                self.name = os_filemanager.db_exists()
+                # Изменение настроек в конфигурационном файле согласно новому названию
+                config.set('DataBase', 'db_name', manual_database_name)
+                with open('cnf/ui_configuration.ini', 'w') as configfile:
+                    config.write(configfile)
+                self.error = 'Reboot required! The default name of the database has changed.'
+
             self.con = sqlite3.connect(self.name)
             self.cursor = self.con.cursor()
-            self.error = None
-        except sqlite3.Error as err:
+
+            self.cursor.execute(TABLE_EXISTS_QUERY)
+            result = self.cursor.fetchall()
+
+            if len(result) != 0:
+                self.error = None
+            else:
+                self.error = 'Database table does not exist!'
+
+        else:
             self.con = None
             self.cursor = None
-            self.error = err
+            self.error = 'The database file does not exist!'
 
     def __enter__(self, table=TABLE_NAME, database=DB_NAME):
+        return None
+
+    def default(self):
+        # Если были ошибки при соединении с БД, вернуть просто объект экземпляра
+        if self.error is not None:
+            return self
+
         # Проверяем, может таблица уже существует
         self.cursor.execute(TABLE_EXISTS_QUERY)
 
         result = self.cursor.fetchall()
+        # Если таблица существует, возвращаем экземпляр класса с ошибкой
+        if len(result) != 0:
+            self.error = 'The table currently exists!'
+            return self
 
-        if len(result) == 0:
-            self.cursor.execute(CREATE_TABLE_QUERY)
-            self.con.commit()
-            result = self.cursor.fetchall()
-            if len(result) != 0:
-                self.error = 'table created, no point in reading'
-            else:
-                self.error = f"An error occurred while creating the table!\n{result[0]}"
+        # Создать таблицу
+        self.cursor.execute(CREATE_TABLE_QUERY)
+        self.con.commit()
+
         # Проверить, таблица создалась
         self.cursor.execute(TABLE_EXISTS_QUERY)
+        result = self.cursor.fetchall()
+        if len(result) != 0:
+            self.error = 'Table created, no point in reading.'
         else:
-            self.error = None
+            self.error = 'An error occurred while creating the table!'
 
         return self
 
