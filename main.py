@@ -5,7 +5,7 @@ import json
 
 import PySimpleGUI as SimpleGUI
 import subprocess
-from sqlite_adapter import TMInterval
+from sqlite_adapter import TMInterval, DBManager
 
 # Иконка приложения
 ICONS_PATH = {
@@ -272,6 +272,16 @@ def show_table():
 
 # Точка входа в приложение
 if __name__ == "__main__":
+
+    db = DBManager()
+    error = db.error
+
+    # Если до входа в программу, при подключении к БД или в других узлах возникла ошибка, отрабатываем ее
+    if error is not None:
+        print(error)
+        # Не существует файла БД и записей в КЭШе, значит у нас имеет место первое использование
+        # запустить в этом же потоке first_use
+
     while True:
         out = frame()
         if out == 0:
