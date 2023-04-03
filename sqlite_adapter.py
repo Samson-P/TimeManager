@@ -1,13 +1,19 @@
 import sqlite3
 from peewee import Model, SqliteDatabase, TextField, AutoField
 import datetime
+import configparser
 
 
-DB_NAME = 'dt_control.db'
-TABLE_NAME = 'dt_control'
+# Открываем файл конфигурации
+config = configparser.ConfigParser()
+config.read("cnf/ui_configuration.ini")
 
-# Поля таблицы БД для
-TABLE_SCHEMA = ['id_dt_interval', 'title', 'description', 'dt_start', 'interval']
+# Имя файла бд и название таблицы берем из конфига
+DB_NAME = config['DataBase']['db_name']
+TABLE_NAME = config['DataBase']['table_name']
+
+# Поля таблицы БД
+TABLE_SCHEMA = config['DataBase']['fields'].split(', ')
 
 # SQL для создания таблицы
 CREATE_TABLE_QUERY = f'''
