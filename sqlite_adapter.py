@@ -128,7 +128,7 @@ class DBManager:
     def __enter__(self, table=TABLE_NAME, database=DB_NAME):
         return None
 
-    def default(self):
+    def default_table(self):
         # Если были ошибки при соединении с БД, вернуть просто объект экземпляра
         if self.error is not None:
             return self
