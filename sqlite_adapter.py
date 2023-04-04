@@ -154,6 +154,26 @@ class DBManager:
         else:
             self.error = 'An error occurred while creating the table!'
 
+    def create_db(self):
+        # Существующие файлы .db поместим в папку OLD
+        if os_filemanager.db_exists('one') is not None:
+            os_filemanager.recycle_db_files()
+
+        # Создаем файл .db
+        self.con = sqlite3.connect(self.name)
+        self.cursor = self.con.cursor()
+        # И сразу создаем в нем таблицу dt_control
+        self.cursor.execute(CREATE_TABLE_QUERY)
+        self.con.commit()
+
+        # Проверить, таблица создалась
+        self.cursor.execute(TABLE_EXISTS_QUERY)
+        result = self.cursor.fetchall()
+        if len(result) != 0:
+            self.error = 'Ok', 'DB and table created, no point in reading.'
+        else:
+            self.error = 'unexpected error', 'An error occurred while creating the table!'
+
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
