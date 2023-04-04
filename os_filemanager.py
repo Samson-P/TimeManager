@@ -25,6 +25,23 @@ def db_exists(counts):
         return None
 
 
+# Перенос некорректного файла .db в папку OLD
+def recycle_db_files():
+    # Создаем папку, если ее не существует
+    if not os.path.isdir('OLD'):
+        os.mkdir('OLD')
+
+    dot_db_files = db_exists('all')
+
+    if dot_db_files is None:
+        return '.db files do not exist', 'No database files found!'
+
+    for file_name in dot_db_files:
+        # Переносим все файлы с расширением .db в папку OLD
+        os.replace(file_name, f'OLD/{file_name}')
+
+    return 'Ok', 'Invalid .db files have been moved to the OLD folder.'
+
 
 # Проверка на существование всех файлов программы
 def check_tm_configuration():
