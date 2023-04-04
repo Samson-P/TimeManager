@@ -3,6 +3,14 @@ import PySimpleGUI as SimpleGUI
 import configparser
 import base64
 
+
+setup_steps = {
+    'Welcome': 1,
+    'Interface personalization': 2,
+    'Confirm the selected settings': 3,
+}
+
+
 config = configparser.ConfigParser()  # создаём объекта парсера
 config.read("cnf/ui_configuration.ini")  # читаем конфиг
 
@@ -181,11 +189,6 @@ def welcome():
     return 'Cancel'
 
 
-setup_steps = {
-    'Welcome': 1,
-    'Interface personalization': 2,
-    'Confirm the selected settings': 3,
-}
 
 
 if __name__ == "__main__":
