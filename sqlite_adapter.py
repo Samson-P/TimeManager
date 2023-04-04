@@ -95,14 +95,14 @@ class DBManager:
         self.table = TABLE_NAME
         self.fields = TABLE_SCHEMA
 
-        manual_database_name = os_filemanager.db_exists()
+        manual_database_name = os_filemanager.db_exists('one')
 
         # Проверяем существование файла базы данных
         if manual_database_name is not None:
             # Проверяем, БД имеет название, как в конфигурационном файле?
             if manual_database_name != self.name:
                 # Если нет, задаем новое
-                self.name = os_filemanager.db_exists()
+                self.name = manual_database_name
                 # Изменение настроек в конфигурационном файле согласно новому названию
                 config.set('DataBase', 'db_name', manual_database_name)
                 with open('cnf/ui_configuration.ini', 'w') as configfile:
