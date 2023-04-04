@@ -6,6 +6,7 @@ import json
 import PySimpleGUI as SimpleGUI
 import subprocess
 from sqlite_adapter import TMInterval, DBManager
+import tm_vision
 
 # Иконка приложения
 ICONS_PATH = {
@@ -120,7 +121,7 @@ def master_frame():
         [
             SimpleGUI.Button('Сохранить', bind_return_key=True, disabled=True),
             SimpleGUI.Cancel(), SimpleGUI.Button('Справка'),
-            SimpleGUI.Button('Таблица', bind_return_key=True, disabled=True)
+            SimpleGUI.Button('Таблица', bind_return_key=True, disabled=False)
         ]
     ]
     return SimpleGUI.Window('Time Manager', layout=TMInterface, icon=ICONS_PATH['main'])
@@ -162,7 +163,7 @@ def frame():
         event, values = window.read()
         match event:
             case 'Таблица':
-                # show_table()
+                tm_vision.show_table()
                 pass
             case 'Пуск':
                 # Только если поле "Род деятельности" не пусто...
@@ -252,22 +253,6 @@ def frame():
                 jobs.clear()
                 window.close()
                 pass
-
-
-def show_table():
-    layout4 = [
-        [SimpleGUI.Text('Данные собранные за все время (начиная с ...):'), SimpleGUI.Button('Показать')],
-        [SimpleGUI.Output(size=(130, 40))],
-        [SimpleGUI.Cancel(), SimpleGUI.Button('справка')]
-    ]
-    table = SimpleGUI.Window('Table', layout4)
-    while True:
-        t_event, t_values = table.read()
-        if t_event == 'Показать':
-            print(open('goodtime.txt').read())
-        if t_event == 'Cancel':
-            table.close()
-            break
 
 
 # Точка входа в приложение
