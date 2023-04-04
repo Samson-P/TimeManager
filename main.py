@@ -5,6 +5,8 @@ import json
 
 import PySimpleGUI as SimpleGUI
 import subprocess
+
+import first_use
 from sqlite_adapter import TMInterval, DBManager
 import tm_vision
 
@@ -258,16 +260,30 @@ def frame():
 # Точка входа в приложение
 if __name__ == "__main__":
 
+    # Инициализация БД
     db = DBManager()
-    error = db.error
+    #
+    status_code, err_desc = db.error
+    print(f'{status_code}: {err_desc}')
 
     # Если до входа в программу, при подключении к БД или в других узлах возникла ошибка, отрабатываем ее
-    if error is not None:
-        print(error)
-        # Не существует файла БД и записей в КЭШе, значит у нас имеет место первое использование
-        # запустить в этом же потоке first_use
+    if 'Ok' != status_code:
 
-    while True:
-        out = frame()
-        if out == 0:
-            break
+        # Проверяем статус, если это "first use", запускаем в том же потоке first_use.main()
+        match status_code:
+            case 'first use':
+                # Не существует файла БД и _ЗАПИСЕЙ В КЭШе_, значит у нас имеет место первое использование
+                # создам модель для сбора данных, подтвержденных на этапе первого запуска
+                first_use.main()
+
+                db.create_db()
+                status_code, err_desc = db.error
+            case _:
+                status_code = 'logout'
+
+    # Если инициализация БД произошла успешно, запускаем приложение
+    if 'Ok' == status_code:
+        while True:
+            out = frame()
+            if out == 0:
+                break
