@@ -189,6 +189,51 @@ def welcome():
     return 'Cancel'
 
 
+# Точка входа
+def main():
+    next_chapter = welcome()
+
+    while True:
+        # Возьмем отдельно: нажатая кнопка,
+        button_preset, subchapter = next_chapter.split()
+
+        # Отработка кнопки ДАЛЕЕ
+        if 'next' == button_preset:
+            match subchapter:
+                case 'welcome':
+                    next_chapter = personalization()
+                case 'personalization':
+                    next_chapter = confirm()
+                case 'confirm':
+                    return 'ПРИМЕНЕНИЕ ВЫБРАННЫХ НАСТРОЕК'
+
+        # Отработка кнопки ВЫЙТИ
+        if 'cancel' == button_preset:
+            match subchapter:
+                case 'welcome':
+                    return 'logout'
+                case 'personalization':
+                    return 'logout'
+                case 'confirm':
+                    next_chapter = welcome()
+
+        # Отработка кнопки НАЗАД
+        if 'back' == button_preset:
+            match subchapter:
+                case 'welcome':
+                    return 'logout'
+                case 'personalization':
+                    next_chapter = welcome()
+                case 'confirm':
+                    next_chapter = personalization()
+
+        # Отработка кнопки ПРОПУСТИТЬ, ПОСТАВИТЬ ПО УМОЛЧ.
+        if 'skip' == button_preset:
+            match subchapter:
+                case 'welcome':
+                    return 'default'
+                case 'personalization':
+                    return 'default'
 
 
 if __name__ == "__main__":
