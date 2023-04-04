@@ -107,7 +107,7 @@ class DBManager:
                 config.set('DataBase', 'db_name', manual_database_name)
                 with open('cnf/ui_configuration.ini', 'w') as configfile:
                     config.write(configfile)
-                self.error = 'Reboot required! The default name of the database has changed.'
+                self.error = 'reboot', 'Reboot required! The default name of the database has changed.'
 
             self.con = sqlite3.connect(self.name)
             self.cursor = self.con.cursor()
@@ -116,14 +116,14 @@ class DBManager:
             result = self.cursor.fetchall()
 
             if len(result) != 0:
-                self.error = None
+                self.error = 'Ok', None
             else:
-                self.error = 'Database table does not exist!'
+                self.error = 'lost db table', 'Database table does not exist!'
 
         else:
             self.con = None
             self.cursor = None
-            self.error = 'The database file does not exist!'
+            self.error = 'first use', 'The database file does not exist!'
 
     def __enter__(self, table=TABLE_NAME, database=DB_NAME):
         return None
@@ -139,7 +139,7 @@ class DBManager:
         result = self.cursor.fetchall()
         # Если таблица существует, возвращаем экземпляр класса с ошибкой
         if len(result) != 0:
-            self.error = 'The table currently exists!'
+            self.error = 'table exists', 'The table currently exists!'
             return self
 
         # Создать таблицу
@@ -150,9 +150,11 @@ class DBManager:
         self.cursor.execute(TABLE_EXISTS_QUERY)
         result = self.cursor.fetchall()
         if len(result) != 0:
-            self.error = 'Table created, no point in reading.'
+            self.error = 'Ok', 'Table created, no point in reading.'
         else:
-            self.error = 'An error occurred while creating the table!'
+            self.error = 'unexpected error', 'An error occurred while creating the table!'
+
+        return self
 
     def create_db(self):
         # Существующие файлы .db поместим в папку OLD
