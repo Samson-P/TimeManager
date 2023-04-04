@@ -23,7 +23,7 @@ title_font = ('Courier Mono', 14)
 
 
 def confirm():
-    return 'Cancel'
+    return 'cancel confirm'
 
 
 def personalization():
@@ -74,11 +74,10 @@ def personalization():
     while True:
         event, value = window.read()
         locale_state = not locale_state
-        print(event)
         match event:
             case 'Cancel':
                 window.close()
-                break
+                return 'cancel personalization'
             case 'Next':
                 # Изменение настроек в конфигурационном файле согласно заданным пользователем
                 with open('cnf/ui_configuration.ini', 'w') as configfile:
@@ -86,11 +85,11 @@ def personalization():
 
                 # save and execute preferences, close
                 window.close()
-                break
+                return 'next personalization'
             case 'Skip':
                 # close and execute default preferences
                 window.close()
-                break
+                return 'skip personalization'
             case 'More themes':
                 # Делаем доступными все кнопки тем
                 for theme in default_themes:
@@ -141,11 +140,6 @@ def personalization():
             url = event.split(' ')[1]
             webbrowser.open(url)
 
-    if event == 'Далее':
-        return 'Confirm the selected settings'
-    else:
-        return 'Cancel'
-
 
 # Приветствие
 def welcome():
@@ -170,10 +164,10 @@ def welcome():
         match event:
             case 'Cancel':
                 window.close()
-                break
+                return 'cancel welcome'
             case 'Next':
                 window.close()
-                return 'Interface personalization'
+                return 'next welcome'
             case SimpleGUI.WIN_CLOSED:
                 window.close()
                 break
@@ -182,7 +176,7 @@ def welcome():
                 webbrowser.open(config['Global']['source'])
             case 'Skip':
                 window.close()
-                return 'Skip all'
+                return 'skip welcome'
             case _:
                 pass
 
