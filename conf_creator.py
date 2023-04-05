@@ -25,6 +25,12 @@ class ConfManager:
     def __init__(self):
         self.current_configuration = configparser.ConfigParser()
         self.current_configuration.read("cnf/configuration.ini")
+        self.ui_theme = self.current_configuration['UI']['theme']
+        self.ui_locale = self.current_configuration['UI']['locale']
+        self.global_source_url = self.current_configuration['Global']['source']
+        self.database_db_name = self.current_configuration['DataBase']['db_name']
+        self.database_table_name = self.current_configuration['DataBase']['table_name']
+        self.database_fields = self.current_configuration['DataBase']['fields']
 
     def create(self, mode=None, **kwargs):
         # Проверим, есть ли конфиг-файл сейчас, если есть, выкидываем в OLD

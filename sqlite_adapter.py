@@ -1,20 +1,19 @@
 import sqlite3
 from peewee import Model, SqliteDatabase, TextField, AutoField
 import datetime
-import configparser
 import os_filemanager
+from conf_creator import ConfManager
 
 
 # Открываем файл конфигурации
-config = configparser.ConfigParser()
-config.read("cnf/ui_configuration.ini")
+config = ConfManager()
 
 # Имя файла бд и название таблицы берем из конфига
-DB_NAME = config['DataBase']['db_name']
-TABLE_NAME = config['DataBase']['table_name']
+DB_NAME = config.database_db_name
+TABLE_NAME = config.database_table_name
 
 # Поля таблицы БД
-TABLE_SCHEMA = config['DataBase']['fields'].split(', ')
+TABLE_SCHEMA = config.database_fields.split(', ')
 
 # SQL для создания таблицы
 CREATE_TABLE_QUERY = f'''
@@ -105,8 +104,6 @@ class DBManager:
                 self.name = manual_database_name
                 # Изменение настроек в конфигурационном файле согласно новому названию
                 config.set('DataBase', 'db_name', manual_database_name)
-                with open('cnf/ui_configuration.ini', 'w') as configfile:
-                    config.write(configfile)
                 self.error = 'reboot', 'Reboot required! The default name of the database has changed.'
 
             self.con = sqlite3.connect(self.name)
