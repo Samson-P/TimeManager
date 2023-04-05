@@ -43,9 +43,15 @@ def recycle_db_files():
     return 'Ok', 'Invalid .db files have been moved to the OLD folder.'
 
 
-# Проверка на существование всех файлов программы
-def check_tm_configuration():
-    pass
+# Проверка на существование файлов с *.ini в каталоге /cnf
+def check_tm_confile():
+    # Читаем каталог /cnf
+    files = os.listdir('./cnf')
+
+    # Если файл с таким именем есть в каталоге cnf, переместить его в /OLD
+    if 'configuration.ini' in files:
+        # Переносим все файлы с расширением .db в папку OLD
+        os.replace('./cnf/configuration.ini', f'OLD/configuration.ini')
 
 
 # И записать потом имя в файл конфигурации
