@@ -8,6 +8,7 @@ from conf_creator import ConfManager
 # Открываем файл конфигурации
 config = ConfManager()
 
+
 # Имя файла бд и название таблицы берем из конфига
 DB_NAME = config.database_db_name
 TABLE_NAME = config.database_table_name
@@ -177,6 +178,12 @@ class DBManager:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.con.close()
+
+
+class FirstUseModel(ConfManager):
+    
+    def __init__(self):
+        super().__init__()
 
 
 if __name__ == "__main__":
