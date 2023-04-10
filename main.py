@@ -2,11 +2,13 @@
 import datetime
 import sys
 import json
+import time
 
 import PySimpleGUI as SimpleGUI
 import subprocess
 
 import first_use
+import os_filemanager
 from conf_creator import ConfManager
 from sqlite_adapter import TMInterval, DBManager
 import tm_vision
@@ -277,6 +279,9 @@ if __name__ == "__main__":
             case 'first use':
                 # Не существует файла БД и _ЗАПИСЕЙ В КЭШе_, значит у нас имеет место первое использование
                 # создам модель для сбора данных, подтвержденных на этапе первого запуска
+                # избавляемся от старого конфига
+                os_filemanager.check_tm_confile()
+                time.sleep(1)
                 first_use.main()
 
                 db.create_db()
