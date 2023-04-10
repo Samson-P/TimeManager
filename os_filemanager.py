@@ -1,4 +1,13 @@
 import os
+def dir_old_is_exist() -> None:
+    """
+    Создает папку OLD, если ее не существует
+
+    :return: None
+    """
+    # Создаем папку, если ее не существует
+    if not os.path.isdir('OLD'):
+        os.mkdir('OLD')
 
 
 # Проверяем наличие файла с расширением .db в корневом каталоге
@@ -27,9 +36,7 @@ def db_exists(counts):
 
 # Перенос некорректного файла .db в папку OLD
 def recycle_db_files():
-    # Создаем папку, если ее не существует
-    if not os.path.isdir('OLD'):
-        os.mkdir('OLD')
+    dir_old_is_exist()
 
     dot_db_files = db_exists('all')
 
@@ -45,6 +52,9 @@ def recycle_db_files():
 
 # Проверка на существование файлов с *.ini в каталоге /cnf
 def check_tm_confile():
+
+    dir_old_is_exist()
+
     # Читаем каталог /cnf
     files = os.listdir('./cnf')
 
