@@ -1,4 +1,6 @@
 import os
+import datetime
+import random
 def dir_old_is_exist() -> None:
     """
     Создает папку OLD, если ее не существует
@@ -51,7 +53,16 @@ def recycle_db_files():
 
 
 # Проверка на существование файлов с *.ini в каталоге /cnf
-def check_tm_confile():
+def check_tm_confile() -> None:
+    """
+    Функция перемещает существующий файл конфигурации в каталог OLD,
+    если его найдет.
+    Будет иметь имя
+                configuration_DDMMYY-XXX.ini
+                XXX - рандомное трехзначное
+
+    :return: None
+    """
 
     dir_old_is_exist()
 
@@ -60,8 +71,12 @@ def check_tm_confile():
 
     # Если файл с таким именем есть в каталоге cnf, переместить его в /OLD
     if 'configuration.ini' in files:
+        line = list("12345678QWERTYUIOPASDFGHJKLZXCVBNM")
+        random.shuffle(line)
+        random_id = ''.join([random.choice(line) for x in range(3)])
         # Переносим все файлы с расширением .db в папку OLD
-        os.replace('./cnf/configuration.ini', f'OLD/configuration.ini')
+        os.replace('./cnf/configuration.ini',
+                   f'OLD/configuration_{datetime.datetime.now().strftime("%d%m%Y")}-{random_id}.ini')
 
 
 # И записать потом имя в файл конфигурации
