@@ -1,13 +1,20 @@
 import sqlite3
 from peewee import Model, SqliteDatabase, TextField, AutoField
 import datetime
+import os_filemanager
+from conf_creator import ConfManager
 
 
-DB_NAME = 'dt_control.db'
-TABLE_NAME = 'dt_control'
+# Открываем файл конфигурации
+config = ConfManager()
 
-# Поля таблицы БД для
-TABLE_SCHEMA = ['id_dt_interval', 'title', 'description', 'dt_start', 'interval']
+
+# Имя файла бд и название таблицы берем из конфига
+DB_NAME = config.database_db_name
+TABLE_NAME = config.database_table_name
+
+# Поля таблицы БД
+TABLE_SCHEMA = config.database_fields.split(', ')
 
 # SQL для создания таблицы
 CREATE_TABLE_QUERY = f'''
@@ -19,6 +26,11 @@ CREATE TABLE dt_control (
     interval       TEXT    NOT NULL
 );
 '''
+
+# SQL для проверки, существует ли таблица
+TABLE_EXISTS_QUERY = f'''
+                    SELECT name FROM sqlite_master WHERE type='table' AND name='{TABLE_NAME}';
+                    '''
 
 # SQL для записи новой строки
 TABLE_INSERT_QUERY = '''
@@ -83,40 +95,95 @@ class DBManager:
         self.table = TABLE_NAME
         self.fields = TABLE_SCHEMA
 
-        try:
+        manual_database_name = os_filemanager.db_exists('one')
+
+        # Проверяем существование файла базы данных
+        if manual_database_name is not None:
+            # Проверяем, БД имеет название, как в конфигурационном файле?
+            if manual_database_name != self.name:
+                # Если нет, задаем новое
+                self.name = manual_database_name
+                # Изменение настроек в конфигурационном файле согласно новому названию
+                config.set('DataBase', 'db_name', manual_database_name)
+                self.error = 'reboot', 'Reboot required! The default name of the database has changed.'
+
             self.con = sqlite3.connect(self.name)
             self.cursor = self.con.cursor()
-            self.error = None
-        except sqlite3.Error as err:
+
+            self.cursor.execute(TABLE_EXISTS_QUERY)
+            result = self.cursor.fetchall()
+
+            if len(result) != 0:
+                self.error = 'Ok', None
+            else:
+                self.error = 'lost db table', 'Database table does not exist!'
+
+        else:
             self.con = None
             self.cursor = None
-            self.error = err
+            self.error = 'first use', 'The database file does not exist!'
 
     def __enter__(self, table=TABLE_NAME, database=DB_NAME):
-        # проверить, может таблица с таким именем уже существует
-        table_exists_query = f'''
-            SELECT name FROM sqlite_master WHERE type='table' AND name='{table}';
-            '''
+        return None
 
-        self.cursor.execute(table_exists_query)
+    def default_table(self):
+        # Если были ошибки при соединении с БД, вернуть просто объект экземпляра
+        if self.error is not None:
+            return self
+
+        # Проверяем, может таблица уже существует
+        self.cursor.execute(TABLE_EXISTS_QUERY)
+
         result = self.cursor.fetchall()
+        # Если таблица существует, возвращаем экземпляр класса с ошибкой
+        if len(result) != 0:
+            self.error = 'table exists', 'The table currently exists!'
+            return self
 
-        if len(result) == 0:
-            self.cursor.execute(CREATE_TABLE_QUERY)
-            self.con.commit()
-            self.cursor.execute(table_exists_query)
-            result = self.cursor.fetchall()
-            if len(result) != 0:
-                self.error = 'table created, no point in reading'
-            else:
-                self.error = f"An error occurred while creating the table!\n{result[0]}"
+        # Создать таблицу
+        self.cursor.execute(CREATE_TABLE_QUERY)
+        self.con.commit()
+
+        # Проверить, таблица создалась
+        self.cursor.execute(TABLE_EXISTS_QUERY)
+        result = self.cursor.fetchall()
+        if len(result) != 0:
+            self.error = 'Ok', 'Table created, no point in reading.'
         else:
-            self.error = None
+            self.error = 'unexpected error', 'An error occurred while creating the table!'
+
+        return self
+
+    def create_db(self):
+        # Существующие файлы .db поместим в папку OLD
+        if os_filemanager.db_exists('one') is not None:
+            os_filemanager.recycle_db_files()
+
+        # Создаем файл .db
+        self.con = sqlite3.connect(self.name)
+        self.cursor = self.con.cursor()
+        # И сразу создаем в нем таблицу dt_control
+        self.cursor.execute(CREATE_TABLE_QUERY)
+        self.con.commit()
+
+        # Проверить, таблица создалась
+        self.cursor.execute(TABLE_EXISTS_QUERY)
+        result = self.cursor.fetchall()
+        if len(result) != 0:
+            self.error = 'Ok', 'DB and table created, no point in reading.'
+        else:
+            self.error = 'unexpected error', 'An error occurred while creating the table!'
 
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.con.close()
+
+
+class FirstUseModel(ConfManager):
+    
+    def __init__(self):
+        super().__init__()
 
 
 if __name__ == "__main__":

@@ -5,7 +5,10 @@ import json
 
 import PySimpleGUI as SimpleGUI
 import subprocess
-from sqlite_adapter import TMInterval
+
+import first_use
+from sqlite_adapter import TMInterval, DBManager
+import tm_vision
 
 # Иконка приложения
 ICONS_PATH = {
@@ -120,7 +123,7 @@ def master_frame():
         [
             SimpleGUI.Button('Сохранить', bind_return_key=True, disabled=True),
             SimpleGUI.Cancel(), SimpleGUI.Button('Справка'),
-            SimpleGUI.Button('Таблица', bind_return_key=True, disabled=True)
+            SimpleGUI.Button('Таблица', bind_return_key=True, disabled=False)
         ]
     ]
     return SimpleGUI.Window('Time Manager', layout=TMInterface, icon=ICONS_PATH['main'])
@@ -162,7 +165,7 @@ def frame():
         event, values = window.read()
         match event:
             case 'Таблица':
-                # show_table()
+                tm_vision.show_table()
                 pass
             case 'Пуск':
                 # Только если поле "Род деятельности" не пусто...
@@ -254,25 +257,33 @@ def frame():
                 pass
 
 
-def show_table():
-    layout4 = [
-        [SimpleGUI.Text('Данные собранные за все время (начиная с ...):'), SimpleGUI.Button('Показать')],
-        [SimpleGUI.Output(size=(130, 40))],
-        [SimpleGUI.Cancel(), SimpleGUI.Button('справка')]
-    ]
-    table = SimpleGUI.Window('Table', layout4)
-    while True:
-        t_event, t_values = table.read()
-        if t_event == 'Показать':
-            print(open('goodtime.txt').read())
-        if t_event == 'Cancel':
-            table.close()
-            break
-
-
 # Точка входа в приложение
 if __name__ == "__main__":
-    while True:
-        out = frame()
-        if out == 0:
-            break
+
+    # Инициализация БД
+    db = DBManager()
+    #
+    status_code, err_desc = db.error
+    print(f'{status_code}: {err_desc}')
+
+    # Если до входа в программу, при подключении к БД или в других узлах возникла ошибка, отрабатываем ее
+    if 'Ok' != status_code:
+
+        # Проверяем статус, если это "first use", запускаем в том же потоке first_use.main()
+        match status_code:
+            case 'first use':
+                # Не существует файла БД и _ЗАПИСЕЙ В КЭШе_, значит у нас имеет место первое использование
+                # создам модель для сбора данных, подтвержденных на этапе первого запуска
+                first_use.main()
+
+                db.create_db()
+                status_code, err_desc = db.error
+            case _:
+                status_code = 'logout'
+
+    # Если инициализация БД произошла успешно, запускаем приложение
+    if 'Ok' == status_code:
+        while True:
+            out = frame()
+            if out == 0:
+                break

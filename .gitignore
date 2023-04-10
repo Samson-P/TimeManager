@@ -3,3 +3,6 @@
 .idea/
 .venv/
 __pycache__/
+OLD/*.ini
+test.py
+cnf/configuration.ini
