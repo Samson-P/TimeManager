@@ -23,6 +23,7 @@ class ConfManager:
     uname = getpass.getuser()
 
     def __init__(self):
+        os_filemanager.duplicate_tm_confile()
         self.current_configuration = configparser.ConfigParser()
         self.current_configuration.read("cnf/configuration.ini")
         self.ui_theme = self.current_configuration['UI']['theme']
