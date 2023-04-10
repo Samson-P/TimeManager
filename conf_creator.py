@@ -1,3 +1,4 @@
+import webbrowser
 import configparser
 import os_filemanager
 import getpass
@@ -59,6 +60,9 @@ class ConfManager:
         with open('cnf/configuration.ini', 'w') as new_configfile:
             self.current_configuration.write(new_configfile)
         return self
+
+    def open_source(self):
+        webbrowser.open(self.global_source_url)
 
     # Возвращаем объект текущего конфига
     def __repr__(self):
