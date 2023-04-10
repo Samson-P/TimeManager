@@ -79,3 +79,20 @@ def check_tm_confile() -> None:
                    f'OLD/configuration_{datetime.datetime.now().strftime("%d%m%Y")}-{random_id}.ini')
 
 
+def duplicate_tm_confile() -> None:
+    """
+    Функция создает дефолтный конфиг, если файл /cnf/configuration.ini отсутствует
+
+    :return: None
+    """
+    # Читаем каталог /cnf
+    files = os.listdir('./cnf')
+
+    # Если конфиг существует, не трогаем, иначе переписываем дефолтный
+    if 'configuration.ini' in files:
+        return None
+    else:
+        config = configparser.ConfigParser()
+        config.read('cnf/default_configuration.ini')
+        with open('cnf/configuration.ini', 'w') as new_configfile:
+            config.write(new_configfile)
