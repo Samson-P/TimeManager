@@ -1,6 +1,9 @@
 import os
 import datetime
 import random
+import configparser
+
+
 def dir_old_is_exist() -> None:
     """
     Создает папку OLD, если ее не существует
@@ -14,6 +17,14 @@ def dir_old_is_exist() -> None:
 
 # Проверяем наличие файла с расширением .db в корневом каталоге
 def db_exists(counts):
+    """
+    Функция ищет файлы с расширением .db в корневом каталоге
+
+    :param counts: 'one' - если хотим получить первый найденный *.db
+                   'all' - если хотим получить список всех *.db
+
+    :return: str, list или None
+    """
     # Читаем корневой каталог
     files = os.listdir('.')
 
@@ -37,7 +48,13 @@ def db_exists(counts):
 
 
 # Перенос некорректного файла .db в папку OLD
-def recycle_db_files():
+def recycle_db_files() -> tuple:
+    """
+    Переносит все файлы *.db в каталог OLD, если их найдет
+
+    :return: (str, str): ('state', 'description')
+    """
+
     dir_old_is_exist()
 
     dot_db_files = db_exists('all')
