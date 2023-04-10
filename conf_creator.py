@@ -48,8 +48,13 @@ class ConfManager:
                 self.default_configuration.write(new_configfile)
         else:
             self.default_configuration.set('UI', 'theme', kwargs['theme'])
-            self.default_configuration.set('UI', 'uname', self.uname)
+            self.default_configuration.set('UI', 'uname', kwargs['uname'])
             self.default_configuration.set('UI', 'locale', kwargs['locale'])
+            self.default_configuration.set('DataBase', 'db_name', kwargs['db_name'])
+            self.default_configuration.set('DataBase', 'table_name', kwargs['table_name'])
+            self.default_configuration.set('DataBase', 'fields', kwargs['fields'])
+            self.default_configuration.set('SuperUser', 'login', kwargs['login'])
+            self.default_configuration.set('SuperUser', 'password', kwargs['password'])
             with open('cnf/configuration.ini', 'w') as new_configfile:
                 self.default_configuration.write(new_configfile)
 

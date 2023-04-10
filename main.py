@@ -7,8 +7,11 @@ import PySimpleGUI as SimpleGUI
 import subprocess
 
 import first_use
+from conf_creator import ConfManager
 from sqlite_adapter import TMInterval, DBManager
 import tm_vision
+
+config = ConfManager()
 
 # Иконка приложения
 ICONS_PATH = {
@@ -21,7 +24,7 @@ ICONS_PATH = {
     'refresh': 'ico/refresh.ico',
 }
 # Общая тема окон DarkGreen4
-SimpleGUI.theme('DarkGreen3')
+SimpleGUI.theme(config.ui_theme)
 
 # Меню приложения
 menu_def = [['Файл', ['Пуск', 'Стоп', 'Перезапустить', 'Сохранить круги', 'Выйти', 'Импортировать из файла sql/json']],
@@ -280,6 +283,9 @@ if __name__ == "__main__":
                 status_code, err_desc = db.error
             case _:
                 status_code = 'logout'
+
+    # Применяем новые настройки темы, если они менялись
+    SimpleGUI.theme(config.ui_theme)
 
     # Если инициализация БД произошла успешно, запускаем приложение
     if 'Ok' == status_code:

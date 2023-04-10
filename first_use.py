@@ -28,7 +28,7 @@ def confirm():
          ]
     ]
 
-    window = SimpleGUI.Window('Подтверждение', layout, icon='ico/main.ico')
+    window = SimpleGUI.Window('Подтверждение', layout, icon='ico/save.ico')
 
     while True:
         event, _ = window.read()
@@ -174,6 +174,7 @@ def personalization():
             case 'next':
                 # Закрываем окно
                 window.close()
+                first_use_model.ui_locale = ('Ru', 'En')[locale_state]
                 # Передаем в точку входа в приложение первого использования данные с окна
                 return 'next personalization', first_use_model
             case 'advanced-next':
@@ -181,7 +182,6 @@ def personalization():
                 window.close()
                 # Передаем в точку входа в приложение первого использования данные с окна
                 first_use_model.uname = value['uname']
-                first_use_model.ui_locale = ('Ru', 'En')[locale_state]
                 first_use_model.database_db_name = value['db_name']
                 first_use_model.database_table_name = value['table_name']
                 first_use_model.database_fields = value['fields']
@@ -256,7 +256,8 @@ def personalization():
 def welcome():
     # Шаблон приветственного окна
     layout = [
-        [SimpleGUI.Text('Привет, я Time Manager версии 5', font=title_font, justification='center', size=(70, 1))],
+        [SimpleGUI.Text(f'Привет, {config.uname}. Я Time Manager версии 5', font=title_font, justification='center',
+                        size=(70, 1))],
         [SimpleGUI.Text(
             'Приложение для подсчета времени, затраченного на определенный вид деятельности с возможностью\n'
             'первичного анализа, демонстрации и экспорта статистики')],
@@ -294,6 +295,7 @@ def welcome():
 # Точка входа
 def main():
     next_chapter = welcome()
+    model = ConfManager()
 
     while True:
         # Возьмем отдельно: нажатая кнопка,
@@ -304,9 +306,21 @@ def main():
             match subchapter:
                 case 'welcome':
                     next_chapter, model = personalization()
+                    print(model.uname, model.superuser_login, model.superuser_password)
                 case 'personalization':
                     next_chapter = confirm()
                 case 'confirm':
+                    print(model.uname, model.superuser_login, model.superuser_password)
+                    config.create(mode='personal',
+                                  uname=model.uname,
+                                  theme=model.ui_theme,
+                                  locale=model.ui_locale,
+                                  db_name=model.database_db_name,
+                                  table_name=model.database_table_name,
+                                  fields=model.database_fields,
+                                  login=model.superuser_login,
+                                  password=model.superuser_password,
+                                  )
                     return 'ПРИМЕНЕНИЕ ВЫБРАННЫХ НАСТРОЕК'
 
         # Отработка кнопки ВЫЙТИ
@@ -333,8 +347,10 @@ def main():
         if 'skip' == button_preset:
             match subchapter:
                 case 'welcome':
+                    config.create()
                     return 'default'
                 case 'personalization':
+                    config.create()
                     return 'default'
 
 
