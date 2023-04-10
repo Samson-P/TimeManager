@@ -33,12 +33,14 @@ class ConfManager:
         self.database_db_name = self.current_configuration['DataBase']['db_name']
         self.database_table_name = self.current_configuration['DataBase']['table_name']
         self.database_fields = self.current_configuration['DataBase']['fields']
+        self.superuser_login = self.current_configuration['SuperUser']['login']
+        self.superuser_password = self.current_configuration['SuperUser']['password']
 
     def create(self, mode=None, **kwargs):
         # Проверим, есть ли конфиг-файл сейчас, если есть, выкидываем в OLD
         os_filemanager.check_tm_confile()
 
-        # Создаем заполняем текущий конфиг
+        # Заполняем текущий конфиг
         if mode is None:
             self.default_configuration.set('UI', 'uname', self.uname)
             # Переписываем файл с замененным именем пользователя в новый конфиг
