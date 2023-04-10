@@ -79,6 +79,3 @@ def check_tm_confile() -> None:
                    f'OLD/configuration_{datetime.datetime.now().strftime("%d%m%Y")}-{random_id}.ini')
 
 
-# И записать потом имя в файл конфигурации
-# Так же схема БД должна генериться из файла конфигурации
-# Правда проблема с
