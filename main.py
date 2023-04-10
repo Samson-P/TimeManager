@@ -285,7 +285,7 @@ if __name__ == "__main__":
                 status_code = 'logout'
 
     # Применяем новые настройки темы, если они менялись
-    SimpleGUI.theme(config.ui_theme)
+    SimpleGUI.theme(ConfManager().ui_theme)
 
     # Если инициализация БД произошла успешно, запускаем приложение
     if 'Ok' == status_code:
