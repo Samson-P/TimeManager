@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>TM metrics</title>
+	<meta charset="UTF-8">
+    <link rel="shortcut icon" href="/main.ico" type="image/x-icon"/>
+</head>
+
+<body>
+    <p>MAIN</p>{% for metric in metrics %}
+    <p>tm_exporter{title="{{ metric.title }}", description="{{ metric.desc }}"} {{ metric.interval }}</p>{% endfor %}
+    <p>END</p>
+</body>
+
+</html>
