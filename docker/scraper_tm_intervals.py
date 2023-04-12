@@ -54,7 +54,7 @@ class TMScrapeIndex:
         self.content = {
             'base_version': "5.1",
             'last_commit': "https://github.com/Samson-P/TimeManager/commit/448f1afe5515029a0ddb3cb665859524c1a7f0e9",
-            'metrics_url': "tm-prom:9092/metrics"}
+            'metrics_url': "/metrics"}  # tm-prom:9092/metrics
 
         # ready-made markup in str format
         self.metrics_markup = self.template.render(self.content)
