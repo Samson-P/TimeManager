@@ -3,7 +3,7 @@ import socketserver     # Establish the TCP Socket connections
 from scraper_tm_intervals import TMScrapeMetrics, TMScrapeIndex
 
 
-EXPORTER_SERVER_PORT = 9095
+EXPORTER_SERVER_PORT = 9090
 
 
 class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
