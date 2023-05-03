@@ -2,8 +2,7 @@
 
 <p align="center"><img src="ico/readme.md/tm_first-use.png" width=70% /></p>
 
-An application for calculating the time spent in a certain type of activity with the possibility of primary analysis,
-demonstration and export of statistics.
+A window application for calculating the time spent in a certain type of activity with the possibility of primary analysis, demonstration and export of statistics.
 
 
 ## About
