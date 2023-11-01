@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 5s
+
+rule_files:
+  - alert.yml
+
+scrape_configs:
+  - job_name: TimeManagerV5
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - 'localhost:9090'

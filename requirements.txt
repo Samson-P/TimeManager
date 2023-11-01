@@ -1,2 +1,13 @@
-PySimpleGUI
+PySimpleGUI~=4.60.4
 peewee==3.16.0
+webbrowser
+configparser
+os_filemanager
+getpass
+datetime
+random
+pandas~=2.0.0
+jinja2~=3.1.2
+
+websockets~=11.0.1
+PyYAML~=6.0

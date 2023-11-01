@@ -6,3 +6,5 @@ __pycache__/
 OLD/*.ini
 test.py
 cnf/configuration.ini
+docker/go-edition
+docker/read.me.txt

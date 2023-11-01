@@ -1,0 +1,24 @@
+version: "3.3"
+   
+services:
+  db:
+    image: postgres:14.3-alpine
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=dt_control
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=gq09}mSR
+  web:
+    build: .
+    command: python server.py runserver 0.0.0.0:9095
+    volumes:
+      - ./exporter:/usr/src/tm_exporter
+    ports:
+      - "9095:9095"
+    environment:
+      - POSTGRES_NAME=dt_control
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=gq09}mSR
+    depends_on:
+      - db

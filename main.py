@@ -281,7 +281,7 @@ if __name__ == "__main__":
                 # создам модель для сбора данных, подтвержденных на этапе первого запуска
                 # избавляемся от старого конфига
                 os_filemanager.check_tm_confile()
-                time.sleep(1)
+                time.sleep(2)
                 first_use.main()
 
                 db.create_db()

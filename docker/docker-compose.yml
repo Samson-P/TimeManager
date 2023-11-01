@@ -1,0 +1,24 @@
+version: '3.5'
+
+services:
+  db_auth:
+    container_name: db_auth
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=admin
+    image: postgres:14.3-alpine
+  cexporter:
+    build: test.exporter_server/
+    command: python ./exporter_server.py
+    network_mode: host
+  prometheus:
+    image: prom/prometheus:v2.30.3
+    ports:
+      - 9000:9090
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command: --web.enable-lifecycle --config.file=/etc/prometheus/prometheus.yml
+
